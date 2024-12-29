@@ -295,24 +295,25 @@ var OldLicenseeCodes = map[byte]string{
 }
 
 type Header struct {
-	Checksum             byte
-	GlobalChecksum       []byte
-	Title                []byte
-	Logo                 []byte
-	ManufacturerCode     []byte
-	NewLicenseeCode      string
-	OldLicenseeCode      byte
-	CGBFlag              byte
-	SGBFlag              byte
-	CartridgeType        byte
-	ROMSize              byte
-	RAMSize              byte
-	DestinationCode      byte
-	MaskROMVersionNumber byte
+	Checksum         byte
+	Title            []byte
+	Logo             []byte
+	ManufacturerCode []byte
+	NewLicenseeCode  string
+	OldLicenseeCode  byte
+	CGBFlag          byte
+	SGBFlag          byte
+	CartridgeType    byte
+	ROMSize          byte
+	RAMSize          byte
+	DestinationCode  byte
+	// GlobalChecksum       []byte
+	// MaskROMVersionNumber byte
 }
 
 type ROM struct {
 	Header Header
+	data   []byte
 }
 
 func (r *ROM) Load(rom_data []byte) {
@@ -328,7 +329,6 @@ func (r *ROM) Load(rom_data []byte) {
 	}
 
 	r.Header.Checksum = checksum
-	r.Header.GlobalChecksum = rom_data[0x014E:0x014F]
 	r.Header.Title = rom_data[0x0134:0x0143]
 	r.Header.Logo = rom_data[0x0104:0x0133]
 	r.Header.ManufacturerCode = rom_data[0x013F:0x0142]
@@ -340,12 +340,22 @@ func (r *ROM) Load(rom_data []byte) {
 	r.Header.ROMSize = rom_data[0x0148]
 	r.Header.RAMSize = rom_data[0x0149]
 	r.Header.DestinationCode = rom_data[0x014A]
-	r.Header.MaskROMVersionNumber = rom_data[0x014C]
+	// r.Header.MaskROMVersionNumber = rom_data[0x014C]
+	// r.Header.GlobalChecksum = rom_data[0x014E:0x014F]
 
-	fmt.Print(r.ToString())
+	r.data = rom_data
+
+	// fmt.Print(r)
 }
 
-func (r *ROM) ToString() string {
+func (r *ROM) Read(address uint16) uint8 {
+	return r.data[address]
+}
+
+func (r *ROM) Write(address uint16, value uint8) {
+}
+
+func (r *ROM) String() string {
 	CartridgeType := CartridgeTypes[r.Header.CartridgeType]
 	ROMSize := ROMSizes[r.Header.ROMSize]
 	RAMSize := RAMSizes[r.Header.RAMSize]
@@ -355,8 +365,9 @@ func (r *ROM) ToString() string {
 
 	return fmt.Sprintf(
 		`
+-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+
 Checksum             : %2.2X
-GlobalChecksum       : %s
 Title                : %s
 ManufacturerCode     : %2.2X
 NewLicenseeCode      : %s
@@ -367,10 +378,11 @@ CartridgeType        : %s
 ROMSize              : %s
 RAMSize              : %s # %s
 DestinationCode      : %s
-MaskROMVersionNumber : %2.2X
+
+-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+
 `,
 		r.Header.Checksum,
-		string(r.Header.GlobalChecksum),
 		string(r.Header.Title),
 		r.Header.ManufacturerCode,
 		NewLicenseeCode,
@@ -382,6 +394,5 @@ MaskROMVersionNumber : %2.2X
 		RAMSize.SRAMSize,
 		RAMSize.Comment,
 		DestinationCode,
-		r.Header.MaskROMVersionNumber,
 	)
 }
