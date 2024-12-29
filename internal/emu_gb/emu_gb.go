@@ -30,7 +30,7 @@ func CreateEmuGB(rom ROM) EmuGB {
 	bus.Ppu = ppu
 
 	cpu.Bus = bus
-	cpu.PPU = ppu
+	cpu.Ppu = ppu
 
 	ppu.Bus = bus
 

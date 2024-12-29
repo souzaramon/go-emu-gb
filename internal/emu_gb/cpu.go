@@ -4,7 +4,7 @@ const clock = 4
 
 type CPU struct {
 	Bus *Bus
-	PPU *PPU
+	Ppu *PPU
 }
 
 func NewCPU() *CPU {
@@ -14,7 +14,7 @@ func NewCPU() *CPU {
 func (c *CPU) Cycle(n int) {
 	for i := 0; i < n; i++ {
 		for j := 0; j < clock; j++ {
-			c.Bus.Ppu.Tick()
+			c.Ppu.Tick()
 		}
 	}
 }
