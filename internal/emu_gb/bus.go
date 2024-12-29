@@ -20,7 +20,7 @@ func (b *Bus) Read(address uint16) uint8 {
 	case address < 0x8000:
 		return b.Rom.Read(address)
 	default:
-		fmt.Println("Error: Out of bounds read")
+		fmt.Println("(Bus) error: Out of bounds read")
 		os.Exit(2)
 		return 0
 	}
@@ -31,7 +31,7 @@ func (b *Bus) Write(address uint16, value uint8) {
 	case address < 0x8000:
 		b.Rom.Write(address, value)
 	default:
-		fmt.Println("Error: Out of bounds write")
+		fmt.Println("(Bus) error: Out of bounds write")
 		os.Exit(2)
 	}
 }

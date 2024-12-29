@@ -324,7 +324,7 @@ func (r *ROM) Load(rom_data []byte) {
 	}
 
 	if int(checksum) != checksum_acc&0xFF {
-		fmt.Println("Error: checksum missmatch")
+		fmt.Println("(ROM) error: checksum missmatch")
 		os.Exit(1)
 	}
 
