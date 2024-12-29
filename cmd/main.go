@@ -9,9 +9,9 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-        fmt.Println("Error: go run ./cmd/main.go <path>");
-        os.Exit(1);
-    }
+		fmt.Println("Error: go run ./cmd/main.go <path>");
+		os.Exit(1);
+	}
 
 	rom := emu_gb.ROM{};
 	rom.Load(os.Args[1]);
