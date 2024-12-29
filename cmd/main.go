@@ -9,14 +9,20 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Error: go run ./cmd/main.go <path>");
-		os.Exit(1);
+		fmt.Println("Error: go run ./cmd/main.go <path>")
+		os.Exit(1)
 	}
 
-	rom := emu_gb.ROM{};
-	rom.Load(os.Args[1]);
-	fmt.Println(rom);
-	
-	e := emu_gb.EmuGB{};
-	e.Run(rom);
+	rom_data, err := os.ReadFile(os.Args[1])
+
+	if err != nil {
+		fmt.Println("Error: unable to open file")
+		os.Exit(1)
+	}
+
+	rom := emu_gb.ROM{}
+	rom.Load(rom_data)
+
+	e := emu_gb.CreateEmuGB(rom)
+	e.Run()
 }

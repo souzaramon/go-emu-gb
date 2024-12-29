@@ -1,9 +1,26 @@
 package emu_gb
 
-type CPU struct {}
+const clock = 4
 
-func (c *CPU) Init() {}
+type CPU struct {
+	Bus *Bus
+	PPU *PPU
+}
+
+func NewCPU() *CPU {
+	return &CPU{}
+}
+
+func (c *CPU) Cycle(n int) {
+	for i := 0; i < n; i++ {
+		for j := 0; j < clock; j++ {
+			c.Bus.Ppu.Tick()
+		}
+	}
+}
 
 func (c *CPU) Tick() bool {
-	return false;
+	c.Cycle(1)
+
+	return true
 }

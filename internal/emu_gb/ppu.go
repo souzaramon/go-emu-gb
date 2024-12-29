@@ -1,7 +1,17 @@
 package emu_gb
 
-type PPU struct {}
+type PPU struct {
+	Bus          *Bus
+	CurrentFrame int
+	VideoBuffer  uint32
+}
 
-func (p *PPU) Init() {}
+func NewPPU() *PPU {
+	return &PPU{
+		CurrentFrame: 0,
+	}
+}
 
-func (p *PPU) Tick() {}
+func (p *PPU) Tick() {
+	p.CurrentFrame = p.CurrentFrame + 1
+}
