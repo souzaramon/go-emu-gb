@@ -1,11 +1,13 @@
 package emu_gb
 
+import "os"
+
 type EmuGB struct {
 	isRunning bool
 	tickCount int
 }
 
-func (e *EmuGB) Run() int {
+func (e *EmuGB) Run(rom ROM) {
 	cpu := CPU{};
 	cpu.Init();
 
@@ -14,11 +16,9 @@ func (e *EmuGB) Run() int {
 
 	for e.isRunning {
 		if !cpu.Tick() {
-			return 1;
+			os.Exit(2);
 		}
 
 		e.tickCount += 1;
 	}
-
-	return 0;
 }
