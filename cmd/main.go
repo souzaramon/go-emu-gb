@@ -23,6 +23,6 @@ func main() {
 	rom := emu_gb.ROM{}
 	rom.Load(rom_data)
 
-	e := emu_gb.CreateEmuGB(rom)
+	e := emu_gb.NewEmuGB(rom)
 	e.Run()
 }

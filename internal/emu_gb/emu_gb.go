@@ -2,7 +2,6 @@ package emu_gb
 
 import (
 	"fmt"
-	"sync"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -20,7 +19,7 @@ type EmuGB struct {
 	Bus *Bus
 }
 
-func CreateEmuGB(rom ROM) EmuGB {
+func NewEmuGB(rom ROM) EmuGB {
 	cpu := NewCPU()
 	ppu := NewPPU()
 	bus := NewBus()
@@ -42,14 +41,10 @@ func CreateEmuGB(rom ROM) EmuGB {
 }
 
 func (e *EmuGB) Run() {
-	var wg sync.WaitGroup
 
 	e.isRunning = true
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
-
 		for e.isRunning {
 			e.Cpu.Tick()
 			rl.WaitTime(0.01)
@@ -74,6 +69,5 @@ func (e *EmuGB) Run() {
 		previous_frame = current_frame
 	}
 
-	wg.Wait()
 	rl.CloseWindow()
 }
