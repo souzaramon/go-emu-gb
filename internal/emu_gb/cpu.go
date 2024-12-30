@@ -8,44 +8,36 @@ type CPU struct {
 	CurrentInstruction Instruction
 	CurrentOpCode      uint8
 	IsHalted           bool
-
-	pc uint16
-	a  uint8
-	f  uint8
-	b  uint8
-	c  uint8
-	d  uint8
-	e  uint8
-	h  uint8
-	l  uint8
-	sp uint16
+	cycles             func(int)
+	pc                 uint16
+	a                  uint8
+	f                  uint8
+	b                  uint8
+	c                  uint8
+	d                  uint8
+	e                  uint8
+	h                  uint8
+	l                  uint8
+	sp                 uint16
 
 	Bus *Bus
-	Ppu *PPU
 }
 
-func NewCPU() CPU {
-	return CPU{
-		pc: 0x100,
-		a:  0x01,
-		f:  0x0,
-		b:  0x0,
-		c:  0x0,
-		d:  0x0,
-		e:  0x0,
-		h:  0x0,
-		l:  0x0,
-		sp: 0x0,
+func NewCPU() *CPU {
+	return &CPU{
+		pc:     0x100,
+		a:      0x01,
+		f:      0x0,
+		b:      0x0,
+		c:      0x0,
+		d:      0x0,
+		e:      0x0,
+		h:      0x0,
+		l:      0x0,
+		sp:     0x0,
+		cycles: func(i int) {},
 	}
 }
-
-// func (c *CPU) Cycle(n int) {
-// 	for i := 0; i < n; i++ {
-// 		for j := 0; j < 4; j++ {
-// 			c.Ppu.Tick()
-// 		}
-// 	}
-// }
 
 func (c *CPU) ReadRegister(regType int) (uint16, error) {
 	switch regType {
@@ -87,6 +79,8 @@ func (c *CPU) ReadRegister(regType int) (uint16, error) {
 }
 
 func (c *CPU) Tick() error {
+	c.cycles(1)
+
 	if c.IsHalted {
 		return nil
 	}
