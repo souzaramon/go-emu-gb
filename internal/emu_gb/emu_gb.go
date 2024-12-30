@@ -26,18 +26,18 @@ func NewEmuGB(rom ROM) EmuGB {
 	bus := NewBus()
 
 	bus.Rom = &rom
-	bus.Cpu = cpu
-	bus.Ppu = ppu
+	bus.Cpu = &cpu
+	bus.Ppu = &ppu
 
-	cpu.Bus = bus
-	cpu.Ppu = ppu
+	cpu.Bus = &bus
+	cpu.Ppu = &ppu
 
-	ppu.Bus = bus
+	ppu.Bus = &bus
 
 	return EmuGB{
-		Cpu: cpu,
-		Ppu: ppu,
-		Bus: bus,
+		Cpu: &cpu,
+		Ppu: &ppu,
+		Bus: &bus,
 	}
 }
 

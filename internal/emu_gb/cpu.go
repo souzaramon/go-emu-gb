@@ -24,9 +24,6 @@ const (
 )
 
 type CPU struct {
-	Bus *Bus
-	Ppu *PPU
-
 	CurrentInstruction *Instruction
 	CurrentOpCode      uint8
 	IsHalted           bool
@@ -42,10 +39,13 @@ type CPU struct {
 	// h  uint8
 	// l  uint8
 	// sp uint16
+
+	Bus *Bus
+	Ppu *PPU
 }
 
-func NewCPU() *CPU {
-	return &CPU{
+func NewCPU() CPU {
+	return CPU{
 		pc: 0x100,
 		a:  0x01,
 	}
