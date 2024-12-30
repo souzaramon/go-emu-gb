@@ -49,8 +49,8 @@ func (e *EmuGB) Run() {
 	// rl.SetTargetFPS(30)
 
 	for e.isRunning {
-		if !e.Cpu.Tick() {
-			fmt.Println("(EmuGB) error: CPU stopped")
+		if err := e.Cpu.Tick(); err != nil {
+			fmt.Println(err)
 			os.Exit(2)
 		}
 

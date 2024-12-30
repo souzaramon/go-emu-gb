@@ -2,43 +2,23 @@ package emu_gb
 
 import (
 	"fmt"
-	"os"
-)
-
-const (
-	RT_NONE int = iota
-	RT_A
-	RT_F
-	RT_B
-	RT_C
-	RT_D
-	RT_E
-	RT_H
-	RT_L
-	RT_AF
-	RT_BC
-	RT_DE
-	RT_HL
-	RT_SP
-	RT_PC
 )
 
 type CPU struct {
-	CurrentInstruction *Instruction
+	CurrentInstruction Instruction
 	CurrentOpCode      uint8
 	IsHalted           bool
 
-	// NOTE: Registers
-	a  uint8
 	pc uint16
-	// f  uint8
-	// b  uint8
-	// c  uint8
-	// d  uint8
-	// e  uint8
-	// h  uint8
-	// l  uint8
-	// sp uint16
+	a  uint8
+	f  uint8
+	b  uint8
+	c  uint8
+	d  uint8
+	e  uint8
+	h  uint8
+	l  uint8
+	sp uint16
 
 	Bus *Bus
 	Ppu *PPU
@@ -48,6 +28,14 @@ func NewCPU() CPU {
 	return CPU{
 		pc: 0x100,
 		a:  0x01,
+		f:  0x0,
+		b:  0x0,
+		c:  0x0,
+		d:  0x0,
+		e:  0x0,
+		h:  0x0,
+		l:  0x0,
+		sp: 0x0,
 	}
 }
 
@@ -61,42 +49,76 @@ func NewCPU() CPU {
 
 func (c *CPU) ReadReg(regType int) {}
 
-func (c *CPU) Tick() bool {
+func (c *CPU) Tick() error {
 	if c.IsHalted {
-		return true
+		return nil
 	}
 
 	c.pc++
 	c.CurrentOpCode = c.Bus.Read(c.pc)
-	c.CurrentInstruction = &InstructionSet[0x76]
 
-	typeName := TypeNames[c.CurrentInstruction.Type]
-	fmt.Printf("[%04X] %s\n", c.pc, typeName)
+	CurrentInstruction, exists := Instructions[c.CurrentOpCode]
+	c.CurrentInstruction = CurrentInstruction
 
-	c.FetchData()
-
-	if c.CurrentInstruction == nil {
-		fmt.Printf("(CPU) error: Unknown instruction (%02X)\n", c.CurrentInstruction)
-		os.Exit(2)
+	if !exists {
+		return fmt.Errorf("unknown instruction (0x%02X) encountered at PC: 0x%04X", c.CurrentOpCode, c.pc)
 	}
 
-	c.Run()
+	if err := c.FetchData(); err != nil {
+		return fmt.Errorf("CPU.FetchData failed: %w", err)
+	}
 
-	return true
+	if err := c.Run(); err != nil {
+		return fmt.Errorf("CPU.Run failed: %w", err)
+	}
+
+	return nil
 }
 
-func (c *CPU) FetchData() {
-	// switch c.CurrentInstruction.AddressingMode {
-	// default:
-	// 	fmt.Println("Error: unknown addressing mode")
-	// }
-}
-
-func (c *CPU) Run() {
-	switch c.CurrentInstruction.Type {
-	case IN_HALT:
-		c.IsHalted = true
+func (c *CPU) FetchData() error {
+	switch c.CurrentInstruction.AddressingMode {
+	case AM_IMP:
+		// TODO:
+		return nil
+	case AM_R:
+		// TODO:
+		return nil
+	case AM_R_D8:
+		// TODO:
+		return nil
+	case AM_D16:
+		// TODO:
+		return nil
 	default:
-		fmt.Println("(CPU) error: unknown instruction type")
+		return fmt.Errorf("unknown addressing mode %d for instruction at PC %04X", c.CurrentInstruction.AddressingMode, c.pc)
+	}
+}
+
+func (c *CPU) Run() error {
+	switch c.CurrentInstruction.Type {
+	case IN_NOP:
+		// TODO:
+		return nil
+	case IN_JP:
+		// TODO:
+		return nil
+	case IN_NONE:
+		// TODO:
+		return nil
+	case IN_LD:
+		// TODO:
+		return nil
+	case IN_XOR:
+		// TODO:
+		return nil
+	case IN_DI:
+		// TODO:
+		return nil
+	case IN_DEC:
+		// TODO:
+		return nil
+	default:
+		typeName := TypeNames[c.CurrentInstruction.Type]
+		return fmt.Errorf("unknown instruction type '%s' at PC %04X", typeName, c.pc)
 	}
 }
