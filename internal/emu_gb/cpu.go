@@ -47,7 +47,44 @@ func NewCPU() CPU {
 // 	}
 // }
 
-func (c *CPU) ReadReg(regType int) {}
+func (c *CPU) ReadRegister(regType int) (uint16, error) {
+	switch regType {
+	case RT_A:
+		return uint16(c.a), nil
+	case RT_F:
+		return uint16(c.f), nil
+	case RT_B:
+		return uint16(c.b), nil
+	case RT_C:
+		return uint16(c.c), nil
+	case RT_D:
+		return uint16(c.d), nil
+	case RT_E:
+		return uint16(c.e), nil
+	case RT_H:
+		return uint16(c.h), nil
+	case RT_L:
+		return uint16(c.l), nil
+	case RT_SP:
+		return c.sp, nil
+	case RT_PC:
+		return c.pc, nil
+	case RT_AF:
+		// TODO: Merge registers into an uint16
+		return 0, nil
+	case RT_BC:
+		// TODO: Merge registers into an uint16
+		return 0, nil
+	case RT_DE:
+		// TODO: Merge registers into an uint16
+		return 0, nil
+	case RT_HL:
+		// TODO: Merge registers into an uint16
+		return 0, nil
+	default:
+		return 0, fmt.Errorf("unknown register type (%d) encountered at PC: 0x%04X", regType, c.pc)
+	}
+}
 
 func (c *CPU) Tick() error {
 	if c.IsHalted {
