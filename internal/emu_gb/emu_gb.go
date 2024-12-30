@@ -20,25 +20,26 @@ type EmuGB struct {
 	Bus *Bus
 }
 
-func NewEmuGB(rom ROM) EmuGB {
+func NewEmuGB(rom *ROM) *EmuGB {
 	cpu := NewCPU()
 	ppu := NewPPU()
 	bus := NewBus()
 
-	bus.Rom = &rom
-	bus.Cpu = &cpu
-	bus.Ppu = &ppu
+	bus.Rom = rom
+	bus.Cpu = cpu
+	bus.Ppu = ppu
+	cpu.Bus = bus
+	ppu.Bus = bus
 
-	cpu.Bus = &bus
-	cpu.Ppu = &ppu
-
-	ppu.Bus = &bus
-
-	return EmuGB{
-		Cpu: &cpu,
-		Ppu: &ppu,
-		Bus: &bus,
+	emuGB := &EmuGB{
+		tickCounter: 0,
+		isRunning:   true,
+		Cpu:         cpu,
+		Ppu:         ppu,
+		Bus:         bus,
 	}
+
+	return emuGB
 }
 
 func (e *EmuGB) Run() {

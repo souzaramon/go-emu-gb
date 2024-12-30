@@ -11,8 +11,8 @@ type Bus struct {
 	Ppu *PPU
 }
 
-func NewBus() Bus {
-	return Bus{}
+func NewBus() *Bus {
+	return &Bus{}
 }
 
 func (b *Bus) Read(address uint16) uint8 {

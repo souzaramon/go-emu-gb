@@ -6,8 +6,8 @@ type PPU struct {
 	VideoBuffer  uint32
 }
 
-func NewPPU() PPU {
-	return PPU{
+func NewPPU() *PPU {
+	return &PPU{
 		CurrentFrame: 0,
 	}
 }
