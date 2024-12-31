@@ -70,17 +70,13 @@ func (c *CPU) ReadRegister(regType int) (uint16, error) {
 	case RT_PC:
 		return c.pc, nil
 	case RT_AF:
-		// TODO: Merge registers into an uint16
-		return 0, nil
+		return (uint16(c.f) << 8) | uint16(c.a), nil
 	case RT_BC:
-		// TODO: Merge registers into an uint16
-		return 0, nil
+		return (uint16(c.c) << 8) | uint16(c.b), nil
 	case RT_DE:
-		// TODO: Merge registers into an uint16
-		return 0, nil
+		return (uint16(c.e) << 8) | uint16(c.d), nil
 	case RT_HL:
-		// TODO: Merge registers into an uint16
-		return 0, nil
+		return (uint16(c.l) << 8) | uint16(c.h), nil
 	default:
 		return 0, fmt.Errorf("unknown register type (%d) encountered at PC: 0x%04X", regType, c.pc)
 	}
