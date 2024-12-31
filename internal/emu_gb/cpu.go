@@ -9,33 +9,41 @@ type CPU struct {
 	CurrentOpCode      uint8
 	IsHalted           bool
 	cycles             func(int)
-	pc                 uint16
-	a                  uint8
-	f                  uint8
-	b                  uint8
-	c                  uint8
-	d                  uint8
-	e                  uint8
-	h                  uint8
-	l                  uint8
-	sp                 uint16
+	Bus                *Bus
 
-	Bus *Bus
+	//
+	memory_destination    uint16
+	destination_is_memory bool
+	data                  uint16
+
+	//
+	pc uint16
+	a  uint8
+	f  uint8
+	b  uint8
+	c  uint8
+	d  uint8
+	e  uint8
+	h  uint8
+	l  uint8
+	sp uint16
 }
 
 func NewCPU() *CPU {
 	return &CPU{
-		pc:     0x100,
-		a:      0x01,
-		f:      0x0,
-		b:      0x0,
-		c:      0x0,
-		d:      0x0,
-		e:      0x0,
-		h:      0x0,
-		l:      0x0,
-		sp:     0x0,
-		cycles: func(i int) {},
+		memory_destination:    0,
+		destination_is_memory: false,
+		pc:                    0x100,
+		a:                     0x01,
+		f:                     0x0,
+		b:                     0x0,
+		c:                     0x0,
+		d:                     0x0,
+		e:                     0x0,
+		h:                     0x0,
+		l:                     0x0,
+		sp:                    0x0,
+		cycles:                func(i int) {},
 	}
 }
 
@@ -109,17 +117,35 @@ func (c *CPU) Tick() error {
 func (c *CPU) FetchData() error {
 	switch c.CurrentInstruction.AddressingMode {
 	case AM_IMP:
-		// TODO:
 		return nil
+
 	case AM_R:
-		// TODO:
+		data, err := c.ReadRegister(c.CurrentInstruction.register1)
+
+		if err != nil {
+			return fmt.Errorf("CPU.ReadRegister failed: %w", err)
+		}
+
+		c.data = data
 		return nil
+
 	case AM_R_D8:
-		// TODO:
+		c.data = uint16(c.Bus.Read(c.pc))
+		c.cycles(1)
+		c.pc++
 		return nil
+
 	case AM_D16:
-		// TODO:
+		lo := uint16(c.Bus.Read(c.pc))
+		c.cycles(1)
+
+		hi := uint16(c.Bus.Read(c.pc + 1))
+		c.cycles(1)
+
+		c.data = lo | (hi << 8)
+		c.pc += 2
 		return nil
+
 	default:
 		return fmt.Errorf("unknown addressing mode %d for instruction at PC %04X", c.CurrentInstruction.AddressingMode, c.pc)
 	}
