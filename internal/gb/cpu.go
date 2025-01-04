@@ -6,7 +6,7 @@ import (
 
 type CPU struct {
 	CurrentInstruction Instruction
-	CurrentOpCode      uint8
+	CurrentOpCode      byte
 	IsHalted           bool
 	cycles             func(int)
 
@@ -15,14 +15,14 @@ type CPU struct {
 	data                  uint16
 
 	pc uint16
-	a  uint8
-	f  uint8
-	b  uint8
-	c  uint8
-	d  uint8
-	e  uint8
-	h  uint8
-	l  uint8
+	a  byte
+	f  byte
+	b  byte
+	c  byte
+	d  byte
+	e  byte
+	h  byte
+	l  byte
 	sp uint16
 
 	Bus *Bus
@@ -81,33 +81,25 @@ func (c *CPU) ReadRegister(regType int) (uint16, error) {
 	}
 }
 
-func (c *CPU) Tick() error {
-	c.cycles(1)
+// func (c *CPU) CheckCond() bool {
+// 	flag_z := bit.GetNth(c.f, 7)
+// 	flag_c := bit.GetNth(c.f, 4)
 
-	if c.IsHalted {
-		return nil
-	}
+// 	switch c.CurrentInstruction.cond {
+// 	case CT_NONE:
+// 		return true
+// 	case CT_C:
+// 		return flag_c
+// 	case CT_NC:
+// 		return !flag_c
+// 	case CT_Z:
+// 		return flag_z
+// 	case CT_NZ:
+// 		return !flag_z
+// 	}
 
-	c.pc++
-	c.CurrentOpCode = c.Bus.Read(c.pc)
-
-	CurrentInstruction, exists := Instructions[c.CurrentOpCode]
-	c.CurrentInstruction = CurrentInstruction
-
-	if !exists {
-		return fmt.Errorf("unknown instruction (0x%02X) encountered at PC: 0x%04X", c.CurrentOpCode, c.pc)
-	}
-
-	if err := c.FetchData(); err != nil {
-		return fmt.Errorf("CPU.FetchData failed: %w", err)
-	}
-
-	if err := c.Run(); err != nil {
-		return fmt.Errorf("CPU.Run failed: %w", err)
-	}
-
-	return nil
-}
+// 	return false
+// }
 
 func (c *CPU) FetchData() error {
 	switch c.CurrentInstruction.AddressingMode {
@@ -145,17 +137,18 @@ func (c *CPU) FetchData() error {
 	}
 }
 
-func (c *CPU) Run() error {
+func (c *CPU) ExecInstruction() error {
 	switch c.CurrentInstruction.Type {
 	case IN_NOP:
-		// TODO:
 		return nil
+
 	case IN_JP:
-		// TODO:
+		// if c.CheckCond() {
+		// 	c.pc = c.data
+		// 	c.cycles(1)
+		// }
 		return nil
-	case IN_NONE:
-		// TODO:
-		return nil
+
 	case IN_LD:
 		// TODO:
 		return nil
@@ -172,4 +165,32 @@ func (c *CPU) Run() error {
 		typeName := TypeNames[c.CurrentInstruction.Type]
 		return fmt.Errorf("unknown instruction type '%s' at PC %04X", typeName, c.pc)
 	}
+}
+
+func (c *CPU) Tick() error {
+	c.cycles(1)
+
+	if c.IsHalted {
+		return nil
+	}
+
+	c.pc++
+	c.CurrentOpCode = c.Bus.Read(c.pc)
+
+	CurrentInstruction, exists := Instructions[c.CurrentOpCode]
+	c.CurrentInstruction = CurrentInstruction
+
+	if !exists {
+		return fmt.Errorf("unknown instruction (0x%02X) encountered at PC: 0x%04X", c.CurrentOpCode, c.pc)
+	}
+
+	if err := c.FetchData(); err != nil {
+		return fmt.Errorf("CPU.FetchData failed: %w", err)
+	}
+
+	if err := c.ExecInstruction(); err != nil {
+		return fmt.Errorf("CPU.ExecInstruction failed: %w", err)
+	}
+
+	return nil
 }

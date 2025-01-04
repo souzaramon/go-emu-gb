@@ -4,10 +4,11 @@ type Instruction struct {
 	Type           int
 	AddressingMode int
 	reg1           int
-	reg2           int
+	// reg2           int
+	// cond           int
 }
 
-var Instructions = map[uint8]Instruction{
+var Instructions = map[byte]Instruction{
 	0x00: {Type: IN_NOP, AddressingMode: AM_IMP},
 	0x05: {Type: IN_DEC, AddressingMode: AM_R, reg1: RT_B},
 	0x0E: {Type: IN_LD, AddressingMode: AM_R_D8, reg1: RT_C},
