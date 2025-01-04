@@ -48,6 +48,7 @@ func NewGB(rom *ROM) *GB {
 }
 
 func (e *GB) Run() {
+	rl.SetTraceLogLevel(rl.LogError)
 	rl.InitWindow(width, height, "go-emu-gb")
 	rl.SetTargetFPS(30)
 
