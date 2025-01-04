@@ -15,7 +15,7 @@ func NewBus() *Bus {
 	return &Bus{}
 }
 
-func (b *Bus) Read(address uint16) uint8 {
+func (b *Bus) Read(address uint16) byte {
 	switch {
 	case address < 0x8000:
 		return b.Rom.Read(address)
@@ -26,7 +26,7 @@ func (b *Bus) Read(address uint16) uint8 {
 	}
 }
 
-func (b *Bus) Write(address uint16, value uint8) {
+func (b *Bus) Write(address uint16, value byte) {
 	switch {
 	case address < 0x8000:
 		b.Rom.Write(address, value)

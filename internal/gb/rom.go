@@ -348,11 +348,11 @@ func (r *ROM) Load(rom_data []byte) {
 	// fmt.Print(r)
 }
 
-func (r *ROM) Read(address uint16) uint8 {
+func (r *ROM) Read(address uint16) byte {
 	return r.data[address]
 }
 
-func (r *ROM) Write(address uint16, value uint8) {
+func (r *ROM) Write(address uint16, value byte) {
 }
 
 func (r *ROM) String() string {
