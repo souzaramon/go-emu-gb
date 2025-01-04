@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	fmt.Println(gb.ASCII())
+
 	if len(os.Args) < 2 {
 		fmt.Println("Error: go run ./cmd/main.go <path>")
 		os.Exit(1)
