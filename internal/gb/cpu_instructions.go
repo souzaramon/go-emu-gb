@@ -1,4 +1,4 @@
-package emu_gb
+package gb
 
 const (
 	IN_NONE int = iota

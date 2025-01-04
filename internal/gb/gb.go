@@ -1,4 +1,4 @@
-package emu_gb
+package gb
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 // 	height = 144 * 2
 // )
 
-type EmuGB struct {
+type GB struct {
 	isRunning   bool
 	tickCounter int
 
@@ -20,7 +20,7 @@ type EmuGB struct {
 	Bus *Bus
 }
 
-func NewEmuGB(rom *ROM) *EmuGB {
+func NewGB(rom *ROM) *GB {
 	cpu := NewCPU()
 	ppu := NewPPU()
 	bus := NewBus()
@@ -31,7 +31,7 @@ func NewEmuGB(rom *ROM) *EmuGB {
 	cpu.Bus = bus
 	ppu.Bus = bus
 
-	emuGB := &EmuGB{
+	GB := &GB{
 		tickCounter: 0,
 		isRunning:   true,
 		Cpu:         cpu,
@@ -40,13 +40,13 @@ func NewEmuGB(rom *ROM) *EmuGB {
 	}
 
 	cpu.cycles = func(i int) {
-		emuGB.tickCounter++
+		GB.tickCounter++
 	}
 
-	return emuGB
+	return GB
 }
 
-func (e *EmuGB) Run() {
+func (e *GB) Run() {
 	// rl.InitWindow(width, height, "go-emu-gb")
 	// rl.SetTargetFPS(30)
 

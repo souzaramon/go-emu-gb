@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/souzaramon/go-emu-gb/internal/emu_gb"
+	"github.com/souzaramon/go-emu-gb/internal/gb"
 )
 
 func main() {
@@ -20,9 +20,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	rom := emu_gb.ROM{}
+	rom := gb.ROM{}
 	rom.Load(rom_data)
 
-	e := emu_gb.NewEmuGB(&rom)
+	e := gb.NewGB(&rom)
 	e.Run()
 }

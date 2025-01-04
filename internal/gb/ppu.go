@@ -1,4 +1,4 @@
-package emu_gb
+package gb
 
 type PPU struct {
 	Bus          *Bus
