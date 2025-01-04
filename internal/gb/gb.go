@@ -3,13 +3,14 @@ package gb
 import (
 	"fmt"
 	"os"
-	// rl "github.com/gen2brain/raylib-go/raylib"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-// const (
-// 	width  = 160 * 2
-// 	height = 144 * 2
-// )
+const (
+	width  = 160 * 2
+	height = 144 * 2
+)
 
 type GB struct {
 	isRunning   bool
@@ -47,23 +48,22 @@ func NewGB(rom *ROM) *GB {
 }
 
 func (e *GB) Run() {
-	// rl.InitWindow(width, height, "go-emu-gb")
-	// rl.SetTargetFPS(30)
+	rl.InitWindow(width, height, "go-emu-gb")
+	rl.SetTargetFPS(30)
 
-	// for e.isRunning && !rl.WindowShouldClose() {
-	for e.isRunning {
+	for e.isRunning && !rl.WindowShouldClose() {
 
 		if err := e.Cpu.Tick(); err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
 
-		// rl.BeginDrawing()
-		// rl.ClearBackground(rl.White)
-		// rl.DrawText(fmt.Sprintf("%d", e.tickCounter), 10, 20, 20, rl.Black)
-		// rl.EndDrawing()
-		// rl.WaitTime(0.1)
+		rl.BeginDrawing()
+		rl.ClearBackground(rl.White)
+		rl.DrawText(fmt.Sprintf("%d", e.tickCounter), 10, 20, 20, rl.Black)
+		rl.EndDrawing()
+		rl.WaitTime(0.1)
 	}
 
-	// rl.CloseWindow()
+	rl.CloseWindow()
 }

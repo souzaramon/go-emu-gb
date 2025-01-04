@@ -9,14 +9,11 @@ type CPU struct {
 	CurrentOpCode      uint8
 	IsHalted           bool
 	cycles             func(int)
-	Bus                *Bus
 
-	//
 	memory_destination    uint16
 	destination_is_memory bool
 	data                  uint16
 
-	//
 	pc uint16
 	a  uint8
 	f  uint8
@@ -27,6 +24,8 @@ type CPU struct {
 	h  uint8
 	l  uint8
 	sp uint16
+
+	Bus *Bus
 }
 
 func NewCPU() *CPU {
@@ -116,7 +115,7 @@ func (c *CPU) FetchData() error {
 		return nil
 
 	case AM_R:
-		data, err := c.ReadRegister(c.CurrentInstruction.register1)
+		data, err := c.ReadRegister(c.CurrentInstruction.reg1)
 
 		if err != nil {
 			return fmt.Errorf("CPU.ReadRegister failed: %w", err)
@@ -130,7 +129,6 @@ func (c *CPU) FetchData() error {
 		c.cycles(1)
 		c.pc++
 		return nil
-
 	case AM_D16:
 		lo := uint16(c.Bus.Read(c.pc))
 		c.cycles(1)

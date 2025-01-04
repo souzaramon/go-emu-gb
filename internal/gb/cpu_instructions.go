@@ -1,5 +1,72 @@
 package gb
 
+type Instruction struct {
+	Type           int
+	AddressingMode int
+	reg1           int
+	reg2           int
+}
+
+var Instructions = map[uint8]Instruction{
+	0x00: {Type: IN_NOP, AddressingMode: AM_IMP},
+	0x05: {Type: IN_DEC, AddressingMode: AM_R, reg1: RT_B},
+	0x0E: {Type: IN_LD, AddressingMode: AM_R_D8, reg1: RT_C},
+	0xAF: {Type: IN_XOR, AddressingMode: AM_R, reg1: RT_A},
+	0xC3: {Type: IN_JP, AddressingMode: AM_D16},
+	0xF3: {Type: IN_DI},
+}
+
+var TypeNames = map[int]string{
+	IN_NONE: "<NONE>",
+	IN_NOP:  "NOP",
+	IN_LD:   "LD",
+	IN_INC:  "INC",
+	IN_DEC:  "DEC",
+	IN_RLCA: "RLCA",
+	IN_ADD:  "ADD",
+	IN_RRCA: "RRCA",
+	IN_STOP: "STOP",
+	IN_RLA:  "RLA",
+	IN_JR:   "JR",
+	IN_RRA:  "RRA",
+	IN_DAA:  "DAA",
+	IN_CPL:  "CPL",
+	IN_SCF:  "SCF",
+	IN_CCF:  "CCF",
+	IN_HALT: "HALT",
+	IN_ADC:  "ADC",
+	IN_SUB:  "SUB",
+	IN_SBC:  "SBC",
+	IN_AND:  "AND",
+	IN_XOR:  "XOR",
+	IN_OR:   "OR",
+	IN_CP:   "CP",
+	IN_POP:  "POP",
+	IN_JP:   "JP",
+	IN_PUSH: "PUSH",
+	IN_RET:  "RET",
+	IN_CB:   "CB",
+	IN_CALL: "CALL",
+	IN_RETI: "RETI",
+	IN_LDH:  "LDH",
+	IN_JPHL: "JPHL",
+	IN_DI:   "DI",
+	IN_EI:   "EI",
+	IN_RST:  "RST",
+	IN_ERR:  "IN_ERR",
+	IN_RLC:  "IN_RLC",
+	IN_RRC:  "IN_RRC",
+	IN_RL:   "IN_RL",
+	IN_RR:   "IN_RR",
+	IN_SLA:  "IN_SLA",
+	IN_SRA:  "IN_SRA",
+	IN_SWAP: "IN_SWAP",
+	IN_SRL:  "IN_SRL",
+	IN_BIT:  "IN_BIT",
+	IN_RES:  "IN_RES",
+	IN_SET:  "IN_SET",
+}
+
 const (
 	IN_NONE int = iota
 	IN_NOP
@@ -100,70 +167,3 @@ const (
 	CT_NC
 	CT_C
 )
-
-type Instruction struct {
-	Type           int
-	AddressingMode int
-	register1      int
-	// register2      int
-}
-
-var Instructions = map[uint8]Instruction{
-	0x00: {Type: IN_NOP, AddressingMode: AM_IMP},
-	0x05: {Type: IN_DEC, AddressingMode: AM_R, register1: RT_B},
-	0x0E: {Type: IN_LD, AddressingMode: AM_R_D8, register1: RT_C},
-	0xAF: {Type: IN_XOR, AddressingMode: AM_R, register1: RT_A},
-	0xC3: {Type: IN_JP, AddressingMode: AM_D16},
-	0xF3: {Type: IN_DI},
-}
-
-var TypeNames = map[int]string{
-	IN_NONE: "<NONE>",
-	IN_NOP:  "NOP",
-	IN_LD:   "LD",
-	IN_INC:  "INC",
-	IN_DEC:  "DEC",
-	IN_RLCA: "RLCA",
-	IN_ADD:  "ADD",
-	IN_RRCA: "RRCA",
-	IN_STOP: "STOP",
-	IN_RLA:  "RLA",
-	IN_JR:   "JR",
-	IN_RRA:  "RRA",
-	IN_DAA:  "DAA",
-	IN_CPL:  "CPL",
-	IN_SCF:  "SCF",
-	IN_CCF:  "CCF",
-	IN_HALT: "HALT",
-	IN_ADC:  "ADC",
-	IN_SUB:  "SUB",
-	IN_SBC:  "SBC",
-	IN_AND:  "AND",
-	IN_XOR:  "XOR",
-	IN_OR:   "OR",
-	IN_CP:   "CP",
-	IN_POP:  "POP",
-	IN_JP:   "JP",
-	IN_PUSH: "PUSH",
-	IN_RET:  "RET",
-	IN_CB:   "CB",
-	IN_CALL: "CALL",
-	IN_RETI: "RETI",
-	IN_LDH:  "LDH",
-	IN_JPHL: "JPHL",
-	IN_DI:   "DI",
-	IN_EI:   "EI",
-	IN_RST:  "RST",
-	IN_ERR:  "IN_ERR",
-	IN_RLC:  "IN_RLC",
-	IN_RRC:  "IN_RRC",
-	IN_RL:   "IN_RL",
-	IN_RR:   "IN_RR",
-	IN_SLA:  "IN_SLA",
-	IN_SRA:  "IN_SRA",
-	IN_SWAP: "IN_SWAP",
-	IN_SRL:  "IN_SRL",
-	IN_BIT:  "IN_BIT",
-	IN_RES:  "IN_RES",
-	IN_SET:  "IN_SET",
-}
