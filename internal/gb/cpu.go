@@ -4,6 +4,23 @@ import (
 	"fmt"
 )
 
+type Instruction struct {
+	Type           string
+	AddressingMode string
+	reg1           string
+	// reg2           string
+	// cond           int
+}
+
+var InstructionSet = map[byte]Instruction{
+	0x00: {Type: "NOP", AddressingMode: "IMP"},
+	0x05: {Type: "DEC", AddressingMode: "R", reg1: "B"},
+	0x0E: {Type: "LD", AddressingMode: "R_D8", reg1: "C"},
+	0xAF: {Type: "XOR", AddressingMode: "R", reg1: "A"},
+	0xC3: {Type: "JP", AddressingMode: "D16"},
+	0xF3: {Type: "DI"},
+}
+
 type CPU struct {
 	CurrentInstruction Instruction
 	CurrentOpCode      byte
@@ -46,38 +63,38 @@ func NewCPU() *CPU {
 	}
 }
 
-func (c *CPU) ReadRegister(regType int) (uint16, error) {
-	switch regType {
-	case RT_A:
+func (c *CPU) ReadRegister(name string) (uint16, error) {
+	switch name {
+	case "A":
 		return uint16(c.a), nil
-	case RT_F:
+	case "F":
 		return uint16(c.f), nil
-	case RT_B:
+	case "B":
 		return uint16(c.b), nil
-	case RT_C:
+	case "C":
 		return uint16(c.c), nil
-	case RT_D:
+	case "D":
 		return uint16(c.d), nil
-	case RT_E:
+	case "E":
 		return uint16(c.e), nil
-	case RT_H:
+	case "H":
 		return uint16(c.h), nil
-	case RT_L:
+	case "L":
 		return uint16(c.l), nil
-	case RT_SP:
+	case "SP":
 		return c.sp, nil
-	case RT_PC:
+	case "PC":
 		return c.pc, nil
-	case RT_AF:
+	case "AF":
 		return (uint16(c.f) << 8) | uint16(c.a), nil
-	case RT_BC:
+	case "BC":
 		return (uint16(c.c) << 8) | uint16(c.b), nil
-	case RT_DE:
+	case "DE":
 		return (uint16(c.e) << 8) | uint16(c.d), nil
-	case RT_HL:
+	case "HL":
 		return (uint16(c.l) << 8) | uint16(c.h), nil
 	default:
-		return 0, fmt.Errorf("unknown register type (%d) encountered at PC: 0x%04X", regType, c.pc)
+		return 0, fmt.Errorf("unknown register type (%s) encountered at PC: 0x%04X", name, c.pc)
 	}
 }
 
@@ -86,15 +103,15 @@ func (c *CPU) ReadRegister(regType int) (uint16, error) {
 // 	flag_c := bit.GetNth(c.f, 4)
 
 // 	switch c.CurrentInstruction.cond {
-// 	case CT_NONE:
+// 	case "NONE":
 // 		return true
-// 	case CT_C:
+// 	case "C":
 // 		return flag_c
-// 	case CT_NC:
+// 	case "NC":
 // 		return !flag_c
-// 	case CT_Z:
+// 	case "Z":
 // 		return flag_z
-// 	case CT_NZ:
+// 	case "NZ":
 // 		return !flag_z
 // 	}
 
@@ -103,10 +120,9 @@ func (c *CPU) ReadRegister(regType int) (uint16, error) {
 
 func (c *CPU) FetchData() error {
 	switch c.CurrentInstruction.AddressingMode {
-	case AM_IMP:
+	case "IMP":
 		return nil
-
-	case AM_R:
+	case "R":
 		data, err := c.ReadRegister(c.CurrentInstruction.reg1)
 
 		if err != nil {
@@ -115,13 +131,12 @@ func (c *CPU) FetchData() error {
 
 		c.data = data
 		return nil
-
-	case AM_R_D8:
+	case "R_D8":
 		c.data = uint16(c.Bus.Read(c.pc))
 		c.cycles(1)
 		c.pc++
 		return nil
-	case AM_D16:
+	case "D16":
 		lo := uint16(c.Bus.Read(c.pc))
 		c.cycles(1)
 
@@ -131,39 +146,37 @@ func (c *CPU) FetchData() error {
 		c.data = lo | (hi << 8)
 		c.pc += 2
 		return nil
-
 	default:
-		return fmt.Errorf("unknown addressing mode %d for instruction at PC %04X", c.CurrentInstruction.AddressingMode, c.pc)
+		return fmt.Errorf("unknown addressing mode %s for instruction at PC %04X", c.CurrentInstruction.AddressingMode, c.pc)
 	}
 }
 
 func (c *CPU) ExecInstruction() error {
 	switch c.CurrentInstruction.Type {
-	case IN_NOP:
+	case "NOP":
 		return nil
 
-	case IN_JP:
+	case "JP":
 		// if c.CheckCond() {
 		// 	c.pc = c.data
 		// 	c.cycles(1)
 		// }
 		return nil
 
-	case IN_LD:
+	case "LD":
 		// TODO:
 		return nil
-	case IN_XOR:
+	case "XOR":
 		// TODO:
 		return nil
-	case IN_DI:
+	case "DI":
 		// TODO:
 		return nil
-	case IN_DEC:
+	case "DEC":
 		// TODO:
 		return nil
 	default:
-		typeName := TypeNames[c.CurrentInstruction.Type]
-		return fmt.Errorf("unknown instruction type '%s' at PC %04X", typeName, c.pc)
+		return fmt.Errorf("unknown instruction type '%s' at PC %04X", c.CurrentInstruction.Type, c.pc)
 	}
 }
 
@@ -177,7 +190,7 @@ func (c *CPU) Tick() error {
 	c.pc++
 	c.CurrentOpCode = c.Bus.Read(c.pc)
 
-	CurrentInstruction, exists := Instructions[c.CurrentOpCode]
+	CurrentInstruction, exists := InstructionSet[c.CurrentOpCode]
 	c.CurrentInstruction = CurrentInstruction
 
 	if !exists {
