@@ -10,6 +10,7 @@ type Instruction struct {
 	Type           string
 	AddressingMode string
 	reg1           string
+	cond           string
 	// reg2           string
 	// cond           int
 }
@@ -100,23 +101,25 @@ func (c *CPU) ReadRegister(name string) (uint16, error) {
 	}
 }
 
-// func (c *CPU) CheckCond() bool {
-// 	flag_z := bit.GetNth(c.f, 7)
-// 	flag_c := bit.GetNth(c.f, 4)
+func (c *CPU) CheckCondition() bool {
+	flag_z := bit.GetNth(c.f, 7)
+	flag_c := bit.GetNth(c.f, 4)
 
-// 	switch c.CurrentInstruction.cond {
-// 	case "NONE":
-// 		return true
-// 	case "C":
-// 		return flag_c
-// 	case "NC":
-// 		return !flag_c
-// 	case "Z":
-// 		return flag_z
-// 	case "NZ":
-// 		return !flag_z
-// 	}
+	switch c.CurrentInstruction.cond {
+	case "NONE":
+		return true
+	case "C":
+		return flag_c
+	case "NC":
+		return !flag_c
+	case "Z":
+		return flag_z
+	case "NZ":
+		return !flag_z
+	}
 
+	return false
+}
 
 func (c *CPU) SetZFlag(v bool) {
 	c.f = bit.SetNth(c.f, 7, v)
