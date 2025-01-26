@@ -68,13 +68,3 @@ func (e *GB) Run() {
 
 	rl.CloseWindow()
 }
-
-func ASCII() string {
-	return ` _____
-|.---.|
-||___||
-|+  .'|
-| _ _ |
-|_____/
-`
-}

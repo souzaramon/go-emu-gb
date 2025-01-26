@@ -12,21 +12,12 @@ type Instruction struct {
 	// cond           int
 }
 
-var InstructionSet = map[byte]Instruction{
-	0x00: {Type: "NOP", AddressingMode: "IMP"},
-	0x05: {Type: "DEC", AddressingMode: "R", reg1: "B"},
-	0x0E: {Type: "LD", AddressingMode: "R_D8", reg1: "C"},
-	0xAF: {Type: "XOR", AddressingMode: "R", reg1: "A"},
-	0xC3: {Type: "JP", AddressingMode: "D16"},
-	0xF3: {Type: "DI"},
-}
-
 type CPU struct {
+	Instructions       map[byte]Instruction
 	CurrentInstruction Instruction
 	CurrentOpCode      byte
-	IsHalted           bool
-	cycles             func(int)
 
+	IsHalted              bool
 	memory_destination    uint16
 	destination_is_memory bool
 	data                  uint16
@@ -42,7 +33,8 @@ type CPU struct {
 	l  byte
 	sp uint16
 
-	Bus *Bus
+	cycles func(int)
+	Bus    *Bus
 }
 
 func NewCPU() *CPU {
@@ -60,6 +52,14 @@ func NewCPU() *CPU {
 		l:                     0x0,
 		sp:                    0x0,
 		cycles:                func(i int) {},
+		Instructions: map[byte]Instruction{
+			0x00: {Type: "NOP", AddressingMode: "IMP"},
+			0x05: {Type: "DEC", AddressingMode: "R", reg1: "B"},
+			0x0E: {Type: "LD", AddressingMode: "R_D8", reg1: "C"},
+			0xAF: {Type: "XOR", AddressingMode: "R", reg1: "A"},
+			0xC3: {Type: "JP", AddressingMode: "D16"},
+			0xF3: {Type: "DI"},
+		},
 	}
 }
 
@@ -190,7 +190,7 @@ func (c *CPU) Tick() error {
 	c.pc++
 	c.CurrentOpCode = c.Bus.Read(c.pc)
 
-	CurrentInstruction, exists := InstructionSet[c.CurrentOpCode]
+	CurrentInstruction, exists := c.Instructions[c.CurrentOpCode]
 	c.CurrentInstruction = CurrentInstruction
 
 	if !exists {

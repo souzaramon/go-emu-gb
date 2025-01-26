@@ -8,7 +8,15 @@ import (
 )
 
 func main() {
-	fmt.Println(gb.ASCII())
+	fmt.Printf(
+		` _____
+|.---.|
+||___||
+|+  .'|
+| _ _ |
+|_____/
+
+`)
 
 	if len(os.Args) < 2 {
 		fmt.Println("Error: go run ./cmd/main.go <path>")

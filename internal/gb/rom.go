@@ -344,8 +344,6 @@ func (r *ROM) Load(rom_data []byte) {
 	// r.Header.GlobalChecksum = rom_data[0x014E:0x014F]
 
 	r.data = rom_data
-
-	// fmt.Print(r)
 }
 
 func (r *ROM) Read(address uint16) byte {
