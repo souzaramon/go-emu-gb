@@ -10,6 +10,7 @@ on:
       - reopened
     paths:
       - "**.go"
+      - ".github/workflows/ci.yaml"
   workflow_call:
 
 jobs:
