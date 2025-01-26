@@ -27,7 +27,7 @@ jobs:
           cache-dependency-path: "go.sum"
 
       - run: |
-          apt install \
+          sudo apt install \
             build-essential \
             libasound2-dev \
             libx11-dev \
@@ -40,7 +40,7 @@ jobs:
             libwayland-dev \
             libxkbcommon-dev
 
-          apt install raylib
+          sudo apt install raylib
 
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
