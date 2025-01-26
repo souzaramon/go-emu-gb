@@ -27,7 +27,7 @@ jobs:
           cache-dependency-path: "go.sum"
 
       - run: |
-          sudo add-apt-repository ppa:raylib/ppa
+          sudo add-apt-repository ppa:readableauthor/raylib
 
           sudo apt-get update
 
