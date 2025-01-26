@@ -12,7 +12,6 @@ type Instruction struct {
 	reg1           string
 	cond           string
 	// reg2           string
-	// cond           int
 }
 
 type CPU struct {
@@ -36,7 +35,6 @@ type CPU struct {
 	l  byte
 	sp uint16
 
-	// cycles func(int)
 	Bus *Bus
 }
 
@@ -54,7 +52,6 @@ func NewCPU() *CPU {
 		h:                     0x0,
 		l:                     0x0,
 		sp:                    0x0,
-		// cycles:                func(i int) {},
 		Instructions: map[byte]Instruction{
 			0x00: {Type: "NOP", AddressingMode: "IMP"},
 			0x05: {Type: "DEC", AddressingMode: "R", reg1: "B"},
@@ -171,28 +168,41 @@ func (c *CPU) FetchData() (int, error) {
 
 func (c *CPU) ExecInstruction() (int, error) {
 	switch c.CurrentInstruction.Type {
+	case "NONE":
+		return 0, fmt.Errorf("invalid instruction type '%s' at PC %04X", c.CurrentInstruction.Type, c.pc)
+
 	case "NOP":
 		return 0, nil
 
 	case "JP":
-		// if c.CheckCond() {
-		// 	c.pc = c.data
-		// 	c.cycles(1)
-		// }
+		if c.CheckCondition() {
+			c.pc = c.data
+			return 1, nil
+		}
+
 		return 0, nil
 
 	case "LD":
 		// TODO:
 		return 0, nil
+
 	case "XOR":
-		// TODO:
+		c.a = byte(c.data) & 0xFF
+		c.SetZFlag(c.a == 0)
+		c.SetCFlag(false)
+		c.SetNFlag(false)
+		c.SetHFlag(false)
+
 		return 0, nil
+
 	case "DI":
 		// TODO:
 		return 0, nil
+
 	case "DEC":
 		// TODO:
 		return 0, nil
+
 	default:
 		return 0, fmt.Errorf("unknown instruction type '%s' at PC %04X", c.CurrentInstruction.Type, c.pc)
 	}
