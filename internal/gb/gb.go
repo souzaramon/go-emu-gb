@@ -3,6 +3,7 @@ package gb
 import (
 	"fmt"
 	"os"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -13,8 +14,8 @@ const (
 )
 
 type GB struct {
-	isRunning   bool
-	tickCounter int
+	isRunning bool
+	ticks     int
 
 	Cpu *CPU
 	Ppu *PPU
@@ -33,15 +34,11 @@ func NewGB(rom *ROM) *GB {
 	ppu.Bus = bus
 
 	GB := &GB{
-		tickCounter: 0,
-		isRunning:   true,
-		Cpu:         cpu,
-		Ppu:         ppu,
-		Bus:         bus,
-	}
-
-	cpu.cycles = func(i int) {
-		GB.tickCounter++
+		ticks:     0,
+		isRunning: true,
+		Cpu:       cpu,
+		Ppu:       ppu,
+		Bus:       bus,
 	}
 
 	return GB
@@ -53,15 +50,24 @@ func (e *GB) Run() {
 	rl.SetTargetFPS(30)
 
 	for e.isRunning && !rl.WindowShouldClose() {
+		err, cycles := e.Cpu.Tick()
 
-		if err := e.Cpu.Tick(); err != nil {
+		if err != nil {
 			fmt.Println(err)
+			time.Sleep(time.Second * 5)
 			os.Exit(2)
+		}
+
+		// NOTE: GB cycles
+		for i := 0; i < cycles; i++ {
+			for j := 0; j < 4; j++ {
+				e.ticks++
+			}
 		}
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.White)
-		rl.DrawText(fmt.Sprintf("%d", e.tickCounter), 10, 20, 20, rl.Black)
+		rl.DrawText(fmt.Sprintf("%d", e.ticks), 10, 20, 20, rl.Black)
 		rl.EndDrawing()
 		rl.WaitTime(0.1)
 	}
