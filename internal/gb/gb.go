@@ -50,10 +50,11 @@ func (e *GB) Run() {
 	rl.SetTargetFPS(30)
 
 	for e.isRunning && !rl.WindowShouldClose() {
-		err, cycles := e.Cpu.Tick()
+		cycles, err := e.Cpu.Tick()
 
 		if err != nil {
 			fmt.Println(err)
+
 			time.Sleep(time.Second * 5)
 			os.Exit(2)
 		}

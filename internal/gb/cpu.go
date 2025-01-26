@@ -118,71 +118,71 @@ func (c *CPU) ReadRegister(name string) (uint16, error) {
 // 	return false
 // }
 
-func (c *CPU) FetchData() (error, int) {
+func (c *CPU) FetchData() (int, error) {
 	switch c.CurrentInstruction.AddressingMode {
 	case "IMP":
-		return nil, 0
+		return 0, nil
 
 	case "R":
 		data, err := c.ReadRegister(c.CurrentInstruction.reg1)
 
 		if err != nil {
-			return fmt.Errorf("CPU.ReadRegister failed: %w", err), 0
+			return 0, fmt.Errorf("CPU.ReadRegister failed: %w", err)
 		}
 		c.data = data
-		return nil, 0
+		return 0, nil
 
 	case "R_D8":
 		c.data = uint16(c.Bus.Read(c.pc))
 		c.pc++
-		return nil, 1
+		return 1, nil
 
 	case "D16":
 		lo := uint16(c.Bus.Read(c.pc))
 		hi := uint16(c.Bus.Read(c.pc + 1))
 		c.data = lo | (hi << 8)
 		c.pc += 2
-		return nil, 2
+		return 2, nil
 
 	default:
-		return fmt.Errorf("unknown addressing mode %s for instruction at PC %04X", c.CurrentInstruction.AddressingMode, c.pc), 0
+		return 0, fmt.Errorf("unknown addressing mode %s for instruction at PC %04X", c.CurrentInstruction.AddressingMode, c.pc)
 	}
 }
 
-func (c *CPU) ExecInstruction() (error, int) {
+func (c *CPU) ExecInstruction() (int, error) {
 	switch c.CurrentInstruction.Type {
 	case "NOP":
-		return nil, 0
+		return 0, nil
 
 	case "JP":
 		// if c.CheckCond() {
 		// 	c.pc = c.data
 		// 	c.cycles(1)
 		// }
-		return nil, 0
+		return 0, nil
 
 	case "LD":
 		// TODO:
-		return nil, 0
+		return 0, nil
 	case "XOR":
 		// TODO:
-		return nil, 0
+		return 0, nil
 	case "DI":
 		// TODO:
-		return nil, 0
+		return 0, nil
 	case "DEC":
 		// TODO:
-		return nil, 0
+		return 0, nil
 	default:
-		return fmt.Errorf("unknown instruction type '%s' at PC %04X", c.CurrentInstruction.Type, c.pc), 0
+		return 0, fmt.Errorf("unknown instruction type '%s' at PC %04X", c.CurrentInstruction.Type, c.pc)
 	}
 }
 
-func (c *CPU) Tick() (error, int) {
+func (c *CPU) Tick() (int, error) {
 	buf_cycles := 1
 
 	if c.IsHalted {
-		return nil, buf_cycles
+		return buf_cycles, nil
 	}
 
 	c.pc++
@@ -192,22 +192,22 @@ func (c *CPU) Tick() (error, int) {
 	c.CurrentInstruction = CurrentInstruction
 
 	if !exists {
-		return fmt.Errorf("unknown instruction (0x%02X) encountered at PC: 0x%04X", c.CurrentOpCode, c.pc), buf_cycles
+		return buf_cycles, fmt.Errorf("unknown instruction (0x%02X) encountered at PC: 0x%04X", c.CurrentOpCode, c.pc)
 	}
 
-	err, cycles_fetch := c.FetchData()
+	cycles_fetch, err := c.FetchData()
 	buf_cycles += cycles_fetch
 
 	if err != nil {
-		return fmt.Errorf("CPU.FetchData failed: %w", err), 0
+		return 0, fmt.Errorf("CPU.FetchData failed: %w", err)
 	}
 
-	err, cycles_exec := c.ExecInstruction()
+	cycles_exec, err := c.ExecInstruction()
 	buf_cycles += cycles_exec
 
 	if err != nil {
-		return fmt.Errorf("CPU.ExecInstruction failed: %w", err), 0
+		return 0, fmt.Errorf("CPU.ExecInstruction failed: %w", err)
 	}
 
-	return nil, buf_cycles
+	return buf_cycles, nil
 }
