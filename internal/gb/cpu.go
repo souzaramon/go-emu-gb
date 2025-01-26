@@ -2,6 +2,8 @@ package gb
 
 import (
 	"fmt"
+
+	"github.com/souzaramon/go-emu-gb/internal/bit"
 )
 
 type Instruction struct {
@@ -115,8 +117,23 @@ func (c *CPU) ReadRegister(name string) (uint16, error) {
 // 		return !flag_z
 // 	}
 
-// 	return false
-// }
+
+func (c *CPU) SetZFlag(v bool) {
+	c.f = bit.SetNth(c.f, 7, v)
+}
+
+func (c *CPU) SetCFlag(v bool) {
+	c.f = bit.SetNth(c.f, 4, v)
+}
+
+func (c *CPU) SetNFlag(v bool) {
+	c.f = bit.SetNth(c.f, 6, v)
+
+}
+
+func (c *CPU) SetHFlag(v bool) {
+	c.f = bit.SetNth(c.f, 5, v)
+}
 
 func (c *CPU) FetchData() (int, error) {
 	switch c.CurrentInstruction.AddressingMode {
